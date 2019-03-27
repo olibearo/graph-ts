@@ -53,7 +53,7 @@ declare namespace bigInt {
   function plus(x: BigInt, y: BigInt): BigInt
   function minus(x: BigInt, y: BigInt): BigInt
   function times(x: BigInt, y: BigInt): BigInt
-  function dividedBy(x: BigInt, y: BigInt): BigInt
+  function dividedByDecimal(x: BigInt, y: BigInt): BigDecimal
   function mod(x: BigInt, y: BigInt): BigInt
 }
 
@@ -191,8 +191,8 @@ export class BigInt extends Uint8Array {
   }
 
   @operator('/')
-  div(other: BigInt): BigInt {
-    return bigInt.dividedBy(this, other)
+  div(other: BigInt): BigDecimal {
+    return bigInt.dividedByDecimal(this, other)
   }
 
   @operator('%')
@@ -212,6 +212,11 @@ export class BigInt extends Uint8Array {
     }
     return true;
   }
+}
+
+export class BigDecimal {
+  digits: BigInt
+  exp: BigInt
 }
 
 /** Type hint for Ethereum values. */
@@ -503,7 +508,7 @@ export class EthereumValue {
 export enum ValueKind {
   STRING = 0,
   INT = 1,
-  FLOAT = 2,
+  BIGDECIMAL = 2,
   BOOL = 3,
   ARRAY = 4,
   NULL = 5,
@@ -698,6 +703,14 @@ export class Value {
     value.data = s as u64
     return value
   }
+
+  static fromBigDecimal(n: BigDecimal): Value {
+    let value = new Value()
+    value.kind = ValueKind.BIGDECIMAL
+    value.data = n as u64
+    return value
+  }
+
 }
 
 /**
